@@ -3,7 +3,6 @@ package com.calendar.calendar5010;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,10 +14,9 @@ import java.util.UUID;
 
 @Getter
 @Setter
-@SuperBuilder(toBuilder = true)
 public abstract class Event {
   @Setter(AccessLevel.NONE)
-  private final String id;
+  private String id;
 
   // required
   private String subject;
@@ -30,43 +28,144 @@ public abstract class Event {
   private LocalTime endTime;
   private String description;
   private String location;
-  private Boolean allowConflict = false;
-  private Visibility visibility = Visibility.PUBLIC;
-
+  private Boolean allowConflict;
+  private Visibility visibility;
   @Setter(AccessLevel.NONE)
-  private List<TimeInterval> timeIntervals = new ArrayList<>();
+  private List<TimeInterval> timeIntervals;
 
-  protected Event(String subject, LocalDate startDate,
-                  LocalTime startTime, LocalDate endDate, LocalTime endTime,
-                  Visibility visibility, String description, String location, boolean allowConflict) {
-
-    this.subject = subject;
-    this.startDate = startDate;
-    this.startTime = startTime;
-    this.endDate = endDate;
-    this.endTime = endTime;
-    this.description = description;
-    this.location = location;
-    this.allowConflict = allowConflict;
-
-    if(visibility != null) {
-      this.visibility = visibility;
+  protected Event(Builder<?> builder) {
+    this.subject = builder.subject;
+    this.startDate = builder.startDate;
+    this.startTime = builder.startTime;
+    this.endDate = builder.endDate;
+    this.endTime = builder.endTime;
+    this.description = builder.description;
+    this.location = builder.location;
+    this.allowConflict = builder.allowConflict != null ? builder.allowConflict : false;
+    this.visibility = builder.visibility != null ? builder.visibility : Visibility.PUBLIC;
+    this.timeIntervals = new ArrayList<>();
+    if (this.visibility == null) {
+      this.visibility = Visibility.PUBLIC;
     }
 
-    setTimeIntervals();
-    //checkIsValid();
-    this.id = UUID.randomUUID().toString();
+    if (builder.id != null) {
+      this.id = builder.id;
+    } else {
+      postBuild();
+    }
   }
 
-  protected Event() {
-    this.id = UUID.randomUUID().toString();
+  protected void postBuild() {
+    ValidationResult validationResult = checkIsValid();
+    if(!validationResult.getValid()) {
+      throw new IllegalArgumentException(validationResult.getMessage());
+    }
+
+    if (this.visibility == null) {
+      this.visibility = Visibility.PUBLIC;
+    }
+    if(endTime == null){
+      endTime = LocalTime.MAX;
+    }
+    if(startTime == null){
+      startTime = LocalTime.MIN;
+    }
+    if(this.id == null) {
+      this.id = UUID.randomUUID().toString();
+    }
+  }
+
+  public static abstract class Builder<T extends Builder<T>> {
+    private String subject;
+    private LocalDate startDate;
+    private LocalTime startTime;
+    private LocalDate endDate;
+    private LocalTime endTime;
+    private String description;
+    private String location;
+    private Boolean allowConflict;
+    private Visibility visibility;
+    private String id;
+
+    public T id(String id) {
+      this.id = id;
+      return self();
+    }
+
+    public T subject(String subject) {
+      this.subject = subject;
+      return self();
+    }
+
+    public T startDate(LocalDate startDate) {
+      this.startDate = startDate;
+      return self();
+    }
+
+    public T startTime(LocalTime startTime) {
+      this.startTime = startTime;
+      return self();
+    }
+
+    public T endDate(LocalDate endDate) {
+      this.endDate = endDate;
+      return self();
+    }
+
+    public T endTime(LocalTime endTime) {
+      this.endTime = endTime;
+      return self();
+    }
+
+    public T description(String description) {
+      this.description = description;
+      return self();
+    }
+
+    public T location(String location) {
+      this.location = location;
+      return self();
+    }
+
+    public T allowConflict(Boolean allowConflict) {
+      this.allowConflict = allowConflict;
+      return self();
+    }
+
+    public T visibility(Visibility visibility) {
+      this.visibility = visibility;
+      return self();
+    }
+
+    protected abstract T self();
+    public abstract Event build();
   }
 
   public enum Visibility {
     PUBLIC, PRIVATE
   }
 
-  public abstract ValidationResult checkIsValid();
+  public ValidationResult checkIsValid(){
+    LocalDate startDate = getStartDate();
+    LocalTime startTime = getStartTime();
+    LocalDate endDate = getEndDate();
+    LocalTime endTime = getEndTime();
+    String subject = getSubject();
+
+    if (startTime == null && endTime != null) {
+      return ValidationResult.error("Cannot set endTime if startTime is null");
+    }
+
+    if (subject == null || startDate == null || endDate == null) {
+      return ValidationResult.error("Missing required parameters.");
+    }
+
+    if(getEndDateTime().isBefore(getStartDateTime())){
+      return ValidationResult.error("End time cannot be before start time");
+    }
+
+    return ValidationResult.valid();
+  }
 
   public LocalDateTime getStartDateTime() {
     if(startTime != null) {

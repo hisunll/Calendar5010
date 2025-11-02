@@ -12,10 +12,10 @@ import java.util.*;
 @Setter
 public class Calendar {
   private String title;
-  private Map<String, Event> events;
+  private Map<String, Event> events = new HashMap<>();
   private Boolean allowConflict =  false;
-  private Map<String, Event> eventsId;
-  private Map<String, RecurringEvent> recurringEvents;
+  private Map<String, Event> eventsId = new HashMap<>();
+  private Map<String, RecurringEvent> recurringEvents = new HashMap<>();
 
   private final Map<LocalDate, Set<TimeInterval>> dailyBuckets = new HashMap<>();
 
@@ -59,7 +59,7 @@ public class Calendar {
       }
 
       ValidationResult validationResult = checkConflict(event);
-      if (event.getAllowConflict() && !validationResult.getValid()) {
+      if (!event.getAllowConflict() && !validationResult.getValid()) {
         return validationResult;
       }
     }
@@ -67,7 +67,7 @@ public class Calendar {
     return ValidationResult.valid();
   }
 
-  void addEvent(Event event) {
+  private void addEvent(Event event) {
     List<Event> eventsList = event.getListEvents();
     for (Event e : eventsList) {
       String stringBuilder = e.getSubject() +

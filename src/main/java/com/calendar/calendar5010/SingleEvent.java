@@ -3,7 +3,6 @@ package com.calendar.calendar5010;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,22 +12,72 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-@SuperBuilder(toBuilder = true)
 public class SingleEvent extends Event {
-  private Boolean belongsToRecurringEvent = false;
+  private Boolean belongsToRecurringEvent;
   private String fatherId;
 
-  public SingleEvent(String subject, LocalDate startDate, LocalTime startTime,
-                     LocalDate endDate, LocalTime endTime,
-                     Event.Visibility visibility, String description,
-                     String location, boolean allowConflict,
-                     Boolean belongsToRecurringEvent, String fatherId) {
-    super(subject, startDate, startTime, endDate, endTime, visibility, description, location, allowConflict);
-    if(belongsToRecurringEvent != null) {
+  private SingleEvent(Builder builder) {
+    super(builder);
+    this.belongsToRecurringEvent = builder.belongsToRecurringEvent != null ? builder.belongsToRecurringEvent : false;
+    this.fatherId = builder.fatherId;
+
+    postBuild();
+  }
+
+  public static class Builder extends Event.Builder<Builder> {
+    private Boolean belongsToRecurringEvent;
+    private String fatherId;
+
+    public Builder belongsToRecurringEvent(Boolean belongsToRecurringEvent) {
       this.belongsToRecurringEvent = belongsToRecurringEvent;
+      return this;
+    }
+
+    public Builder fatherId(String fatherId) {
       this.fatherId = fatherId;
+      return this;
+    }
+
+    @Override
+    protected Builder self() {
+      return this;
+    }
+
+    @Override
+    public SingleEvent build() {
+      return new SingleEvent(this);
     }
   }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  @Override
+  protected void postBuild() {
+    super.postBuild();
+    if(this.belongsToRecurringEvent == null) {
+      this.belongsToRecurringEvent = false;
+    }
+    setTimeIntervals();
+  }
+
+  public Builder toBuilder() {
+    return SingleEvent.builder()
+      .id(this.getId())
+      .subject(this.getSubject())
+      .startDate(this.getStartDate())
+      .startTime(this.getStartTime())
+      .endDate(this.getEndDate())
+      .endTime(this.getEndTime())
+      .description(this.getDescription())
+      .location(this.getLocation())
+      .allowConflict(this.getAllowConflict())
+      .visibility(this.getVisibility())
+      .belongsToRecurringEvent(this.getBelongsToRecurringEvent())
+      .fatherId(this.getFatherId());
+  }
+
 
   @Override
   protected void setTimeIntervals() {
@@ -45,29 +94,6 @@ public class SingleEvent extends Event {
       TimeInterval interval = new TimeInterval(id, now, currentStart, currentEnd);
       getTimeIntervals().add(interval);
     }
-  }
-
-  @Override
-  public ValidationResult checkIsValid(){
-    LocalDate startDate = getStartDate();
-    LocalTime startTime = getStartTime();
-    LocalDate endDate = getEndDate();
-    LocalTime endTime = getEndTime();
-    String subject = getSubject();
-
-    if (startTime == null && endTime != null) {
-      return ValidationResult.error("Cannot set endTime if startTime is null");
-    }
-
-    if (subject == null || startDate == null || endDate == null) {
-      return ValidationResult.error("Missing required parameters.");
-    }
-
-    if(getEndDateTime().isBefore(getStartDateTime())){
-      return ValidationResult.error("End time cannot be before start time");
-    }
-
-    return ValidationResult.valid();
   }
 
   @Override

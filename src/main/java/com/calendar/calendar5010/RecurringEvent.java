@@ -1,19 +1,20 @@
 package com.calendar.calendar5010;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
-@SuperBuilder(toBuilder = true)
 public class RecurringEvent extends Event{
   //required
   private Set<DayOfWeek> recurrenceDays;
@@ -22,24 +23,78 @@ public class RecurringEvent extends Event{
   private Integer repeatCount;
   private LocalDate recurrenceEndDate;
   @Setter(AccessLevel.NONE)
-  private List<Event> events = new ArrayList<>();
+  private List<Event> events;
 
-  public RecurringEvent(String subject, LocalDate startDate, LocalTime startTime,
-                        LocalDate endDate, LocalTime endTime,
-                        Visibility visibility, String description,
-                        String location, boolean allowConflict,
-                        Set<DayOfWeek> recurrenceDays,
-                        Integer repeatCount, LocalDate recurrenceEndDate) {
-    super(subject, startDate, startTime, endDate, endTime, visibility, description, location, allowConflict);
-    this.recurrenceDays = recurrenceDays;
-    this.repeatCount = repeatCount;
-    this.recurrenceEndDate = recurrenceEndDate;
+  private RecurringEvent(Builder builder) {
+    super(builder);
+    this.recurrenceDays = builder.recurrenceDays;
+    this.repeatCount = builder.repeatCount;
+    this.recurrenceEndDate = builder.recurrenceEndDate;
+    postBuild();
+  }
+
+  @Override
+  protected void postBuild() {
     ValidationResult validationResult = checkIsValid();
     if(!validationResult.getValid()) {
       throw new IllegalArgumentException(validationResult.getMessage());
     }
+    super.postBuild();
+    events = new ArrayList<>();
     generateSingleEvents();
     setTimeIntervals();
+  }
+
+  public static class Builder extends Event.Builder<Builder> {
+    private Set<DayOfWeek> recurrenceDays;
+    private Integer repeatCount;
+    private LocalDate recurrenceEndDate;
+
+    public Builder recurrenceDays(Set<DayOfWeek> recurrenceDays) {
+      this.recurrenceDays = recurrenceDays;
+      return this;
+    }
+
+    public Builder repeatCount(Integer repeatCount) {
+      this.repeatCount = repeatCount;
+      return this;
+    }
+
+    public Builder recurrenceEndDate(LocalDate recurrenceEndDate) {
+      this.recurrenceEndDate = recurrenceEndDate;
+      return this;
+    }
+
+    @Override
+    protected Builder self() {
+      return this;
+    }
+
+    @Override
+    public RecurringEvent build() {
+      return new RecurringEvent(this);
+    }
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public Builder toBuilder() {
+    return RecurringEvent.builder()
+      .id(this.getId())
+      .subject(this.getSubject())
+      .startDate(this.getStartDate())
+      .startTime(this.getStartTime())
+      .endDate(this.getEndDate())
+      .endTime(this.getEndTime())
+      .description(this.getDescription())
+      .location(this.getLocation())
+      .allowConflict(this.getAllowConflict())
+      .visibility(this.getVisibility())
+      .recurrenceDays(this.recurrenceDays != null ? new HashSet<>(this.recurrenceDays) : null)
+      .repeatCount(this.repeatCount)
+      .recurrenceEndDate(this.recurrenceEndDate);
   }
 
   private void generateSingleEvents() {
@@ -90,16 +145,10 @@ public class RecurringEvent extends Event{
   @Override
   public ValidationResult checkIsValid(){
     LocalDate startDate = getStartDate();
-    LocalTime startTime = getStartTime();
     LocalDate endDate = getEndDate();
-    LocalTime endTime = getEndTime();
-    String subject = getSubject();
+    super.checkIsValid();
 
-    if (startTime == null && endTime != null) {
-      return ValidationResult.error("Cannot set endTime if startTime is null");
-    }
-
-    if (subject == null || startDate == null || endDate == null || recurrenceDays == null) {
+    if (recurrenceDays == null) {
       return ValidationResult.error("Missing required parameters.");
     }
 
@@ -109,10 +158,6 @@ public class RecurringEvent extends Event{
 
     if (repeatCount != null && recurrenceEndDate != null) {
       return ValidationResult.error("Cannot set both repeatCount and recurrenceEndDate at the same time");
-    }
-
-    if(getEndDateTime().isBefore(getStartDateTime())){
-      return ValidationResult.error("End time cannot be before start time");
     }
 
     if(startDate.isBefore(endDate)){

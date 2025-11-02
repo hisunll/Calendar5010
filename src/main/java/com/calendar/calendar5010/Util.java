@@ -25,16 +25,18 @@ public class Util {
     setIfNotNull(startDate, update::setStartDate);
     oldEvent.prepareForUpdate();
     applyUpdates(newEvent, update);
+    newEvent.prepareForUpdate();
+    calendar.deleteEventTemp(oldEvent);
 
     ValidationResult validationResult = checkIsValid(newEvent, calendar);
 
     if (!validationResult.getValid()) {
-      calendar.addEvent(oldEvent);
+      calendar.createEvent(oldEvent);
       throw new IllegalArgumentException(validationResult.getMessage());
     }
 
     original.copyFrom(newEvent, startDate);
-    calendar.addEvent(original);
+    calendar.createEvent(original);
   }
 
   private static void applyUpdates(Event event, EventUpdate update) {
@@ -52,7 +54,6 @@ public class Util {
       setIfNotNull(update.getRecurrenceDays(), recurringEvent::setRecurrenceDays);
       setIfNotNull(update.getRepeatCount(), recurringEvent::setRepeatCount);
       setIfNotNull(update.getRecurrenceEndDate(), recurringEvent::setRecurrenceEndDate);
-      recurringEvent.prepareForUpdate();
     }
   }
 
