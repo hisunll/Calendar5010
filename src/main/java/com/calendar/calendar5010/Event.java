@@ -84,9 +84,7 @@ public abstract class Event {
     }
   }
 
-  public Event deepCopy() {
-    return this.toBuilder().build();
-  }
+  public abstract Event deepCopy();
 
   public void copyFrom(Event event) {
     this.subject = event.subject;

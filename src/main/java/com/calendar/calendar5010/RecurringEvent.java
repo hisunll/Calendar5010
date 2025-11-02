@@ -22,7 +22,7 @@ public class RecurringEvent extends Event{
   @Setter(AccessLevel.NONE)
   private List<Event> events = new ArrayList<>();
 
-  @Builder
+  @Builder(toBuilder = true)
   public RecurringEvent(String subject, LocalDate startDate, LocalTime startTime,
                         LocalDate endDate, LocalTime endTime,
                         Visibility visibility, String description,
@@ -117,5 +117,10 @@ public class RecurringEvent extends Event{
     }
 
     return ValidationResult.valid();
+  }
+
+  @Override
+  public RecurringEvent deepCopy() {
+    return this.toBuilder().build();
   }
 }

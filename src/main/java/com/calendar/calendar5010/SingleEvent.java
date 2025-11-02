@@ -60,5 +60,10 @@ public class SingleEvent extends Event {
 
     return ValidationResult.valid();
   }
+
+  @Override
+  public SingleEvent deepCopy() {
+    return this.toBuilder().build();
+  }
 }
 
