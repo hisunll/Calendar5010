@@ -64,6 +64,8 @@ public class RecurringEvent extends Event{
           .description(getDescription())
           .location(getLocation())
           .allowConflict(getAllowConflict())
+          .belongsToRecurringEvent(true)
+          .fatherId(getId())
           .build();
 
         this.events.add(singleEvent);
@@ -76,7 +78,7 @@ public class RecurringEvent extends Event{
   }
 
   @Override
-  public void setTimeIntervals() {
+  protected void setTimeIntervals() {
     getTimeIntervals().clear();
 
     for(Event event : events) {
@@ -122,5 +124,11 @@ public class RecurringEvent extends Event{
   @Override
   public RecurringEvent deepCopy() {
     return this.toBuilder().build();
+  }
+
+  @Override
+  public void prepareForUpdate() {
+    generateSingleEvents();
+    setTimeIntervals();
   }
 }

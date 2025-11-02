@@ -86,6 +86,8 @@ public abstract class Event {
 
   public abstract Event deepCopy();
 
+  public abstract void prepareForUpdate();
+
   public void copyFrom(Event event) {
     this.subject = event.subject;
     this.startDate = event.startDate;
@@ -98,7 +100,7 @@ public abstract class Event {
     this.visibility = event.visibility;
   }
 
-  public abstract void setTimeIntervals();
+  protected abstract void setTimeIntervals();
 
   @Override
   public boolean equals(Object o) {

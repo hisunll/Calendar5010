@@ -12,17 +12,24 @@ import java.time.LocalTime;
 @Setter
 @EqualsAndHashCode(callSuper = true)
 public class SingleEvent extends Event {
+  private Boolean belongsToRecurringEvent = false;
+  private String fatherId;
 
   @Builder(toBuilder = true)
   public SingleEvent(String subject, LocalDate startDate, LocalTime startTime,
                      LocalDate endDate, LocalTime endTime,
                      Event.Visibility visibility, String description,
-                     String location, boolean allowConflict) {
+                     String location, boolean allowConflict,
+                     Boolean belongsToRecurringEvent, String fatherId) {
     super(subject, startDate, startTime, endDate, endTime, visibility, description, location, allowConflict);
+    if(belongsToRecurringEvent != null) {
+      this.belongsToRecurringEvent = belongsToRecurringEvent;
+      this.fatherId = fatherId;
+    }
   }
 
   @Override
-  public void setTimeIntervals() {
+  protected void setTimeIntervals() {
     getTimeIntervals().clear();
     LocalDate startDate = getStartDate();
     LocalTime startTime = getStartTime();
@@ -64,6 +71,11 @@ public class SingleEvent extends Event {
   @Override
   public SingleEvent deepCopy() {
     return this.toBuilder().build();
+  }
+
+  @Override
+  public void prepareForUpdate() {
+    setTimeIntervals();
   }
 }
 
