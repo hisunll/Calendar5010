@@ -1,9 +1,9 @@
 package com.calendar.calendar5010;
 
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,11 +13,11 @@ import java.util.List;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
+@SuperBuilder(toBuilder = true)
 public class SingleEvent extends Event {
   private Boolean belongsToRecurringEvent = false;
   private String fatherId;
 
-  @Builder(toBuilder = true)
   public SingleEvent(String subject, LocalDate startDate, LocalTime startTime,
                      LocalDate endDate, LocalTime endTime,
                      Event.Visibility visibility, String description,

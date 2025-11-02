@@ -1,9 +1,9 @@
 package com.calendar.calendar5010;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -15,6 +15,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@SuperBuilder(toBuilder = true)
 public abstract class Event {
   @Setter(AccessLevel.NONE)
   private final String id;
@@ -35,7 +36,6 @@ public abstract class Event {
   @Setter(AccessLevel.NONE)
   private List<TimeInterval> timeIntervals = new ArrayList<>();
 
-  @Builder(toBuilder = true)
   protected Event(String subject, LocalDate startDate,
                   LocalTime startTime, LocalDate endDate, LocalTime endTime,
                   Visibility visibility, String description, String location, boolean allowConflict) {

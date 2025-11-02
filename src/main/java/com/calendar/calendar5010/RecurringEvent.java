@@ -1,6 +1,7 @@
 package com.calendar.calendar5010;
 
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.util.Set;
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
+@SuperBuilder(toBuilder = true)
 public class RecurringEvent extends Event{
   //required
   private Set<DayOfWeek> recurrenceDays;
@@ -22,7 +24,6 @@ public class RecurringEvent extends Event{
   @Setter(AccessLevel.NONE)
   private List<Event> events = new ArrayList<>();
 
-  @Builder(toBuilder = true)
   public RecurringEvent(String subject, LocalDate startDate, LocalTime startTime,
                         LocalDate endDate, LocalTime endTime,
                         Visibility visibility, String description,
