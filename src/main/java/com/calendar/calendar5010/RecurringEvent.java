@@ -131,4 +131,31 @@ public class RecurringEvent extends Event{
     generateSingleEvents();
     setTimeIntervals();
   }
+
+  @Override
+  public List<Event> getListEvents() {
+    return events;
+  }
+
+  @Override
+  public void copyFrom(Event event, LocalDate startDateFilter) {
+    this.setSubject(event.getSubject());
+    if(startDateFilter == null) {
+      this.setStartDate(event.getStartDate());
+      this.setStartTime(event.getStartTime());
+      startDateFilter = event.getStartDate();
+    }
+    this.setEndDate(event.getEndDate());
+    this.setEndTime(event.getEndTime());
+    this.setDescription(event.getDescription());
+    this.setLocation(event.getLocation());
+    this.setAllowConflict(event.getAllowConflict());
+    this.setVisibility(event.getVisibility());
+    LocalDate finalStartDateFilter = startDateFilter;
+    this.getEvents().removeIf(e ->
+      !e.getStartDate().isBefore(finalStartDateFilter)
+    );
+    this.getEvents().addAll(event.getListEvents());
+    this.setTimeIntervals();
+  }
 }

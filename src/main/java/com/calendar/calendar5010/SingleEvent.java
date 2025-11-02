@@ -7,6 +7,8 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -76,6 +78,26 @@ public class SingleEvent extends Event {
   @Override
   public void prepareForUpdate() {
     setTimeIntervals();
+  }
+
+  @Override
+  public List<Event> getListEvents() {
+    List<Event> events = new ArrayList<>();
+    events.add(this);
+    return events;
+  }
+
+  @Override
+  public void copyFrom(Event event, LocalDate startDate) {
+    this.setSubject(event.getSubject());
+    this.setStartDate(event.getStartDate());
+    this.setStartTime(event.getStartTime());
+    this.setEndDate(event.getEndDate());
+    this.setEndTime(event.getEndTime());
+    this.setDescription(event.getDescription());
+    this.setLocation(event.getLocation());
+    this.setAllowConflict(event.getAllowConflict());
+    this.setVisibility(event.getVisibility());
   }
 }
 

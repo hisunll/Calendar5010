@@ -101,6 +101,8 @@ public abstract class Event {
   }
 
   protected abstract void setTimeIntervals();
+  public abstract List<Event> getListEvents();
+  public abstract void copyFrom(Event event, LocalDate startDate);
 
   @Override
   public boolean equals(Object o) {
