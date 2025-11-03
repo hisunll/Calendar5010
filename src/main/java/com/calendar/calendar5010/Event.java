@@ -50,17 +50,10 @@ public abstract class Event {
 
     if (builder.id != null) {
       this.id = builder.id;
-    } else {
-      postBuild();
     }
   }
 
   protected void postBuild() {
-    ValidationResult validationResult = checkIsValid();
-    if(!validationResult.getValid()) {
-      throw new IllegalArgumentException(validationResult.getMessage());
-    }
-
     if (this.visibility == null) {
       this.visibility = Visibility.PUBLIC;
     }

@@ -25,6 +25,9 @@ public class RecurringEvent extends Event{
   @Setter(AccessLevel.NONE)
   private List<Event> events;
 
+  @Setter(AccessLevel.NONE)
+  private LocalDate toCopyEndDate;
+
   private RecurringEvent(Builder builder) {
     super(builder);
     this.recurrenceDays = builder.recurrenceDays;
@@ -97,7 +100,7 @@ public class RecurringEvent extends Event{
       .recurrenceEndDate(this.recurrenceEndDate);
   }
 
-  private void generateSingleEvents() {
+  protected void generateSingleEvents() {
     this.events.clear();
     LocalDate current = getStartDate();
     int count = 0;
@@ -128,6 +131,7 @@ public class RecurringEvent extends Event{
         count++;
       }
 
+      recurrenceEndDate = current;
       current = current.plusDays(1);
     }
 
@@ -156,10 +160,6 @@ public class RecurringEvent extends Event{
       return ValidationResult.error("Missing required parameters.");
     }
 
-    if (repeatCount != null && recurrenceEndDate != null) {
-      return ValidationResult.error("Cannot set both repeatCount and recurrenceEndDate at the same time");
-    }
-
     if(startDate.isBefore(endDate)){
       return ValidationResult.error("Recurring event cannot cross day");
     }
@@ -169,12 +169,19 @@ public class RecurringEvent extends Event{
 
   @Override
   public RecurringEvent deepCopy() {
-    return this.toBuilder().build();
+    RecurringEvent copyEvent = this.toBuilder().build();
+    copyEvent.getEvents().clear();
+    for (Event event : this.events) {
+      copyEvent.getEvents().add(event.deepCopy());
+    }
+    return copyEvent;
   }
 
   @Override
   public void prepareForUpdate() {
-    generateSingleEvents();
+    this.getEvents().removeIf(e ->
+      e.getStartDate().isBefore(getStartDate())
+    );
     setTimeIntervals();
   }
 
@@ -184,7 +191,8 @@ public class RecurringEvent extends Event{
   }
 
   @Override
-  public void copyFrom(Event event, LocalDate startDateFilter) {
+  public void copyFrom(Event e, LocalDate startDateFilter) {
+    RecurringEvent event = (RecurringEvent) e;
     this.setSubject(event.getSubject());
     if(startDateFilter == null) {
       this.setStartDate(event.getStartDate());
@@ -197,9 +205,12 @@ public class RecurringEvent extends Event{
     this.setLocation(event.getLocation());
     this.setAllowConflict(event.getAllowConflict());
     this.setVisibility(event.getVisibility());
+    this.setRecurrenceEndDate(event.getRecurrenceEndDate());
+    this.setRecurrenceDays(event.getRecurrenceDays());
+    this.setRepeatCount(event.getRepeatCount());
     LocalDate finalStartDateFilter = startDateFilter;
-    this.getEvents().removeIf(e ->
-      !e.getStartDate().isBefore(finalStartDateFilter)
+    this.getEvents().removeIf(ee ->
+      !ee.getStartDate().isBefore(finalStartDateFilter)
     );
     this.getEvents().addAll(event.getListEvents());
     this.setTimeIntervals();

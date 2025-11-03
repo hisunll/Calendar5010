@@ -55,6 +55,10 @@ public class SingleEvent extends Event {
 
   @Override
   protected void postBuild() {
+    ValidationResult validationResult = checkIsValid();
+    if(!validationResult.getValid()) {
+      throw new IllegalArgumentException(validationResult.getMessage());
+    }
     super.postBuild();
     if(this.belongsToRecurringEvent == null) {
       this.belongsToRecurringEvent = false;

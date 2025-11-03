@@ -36,7 +36,7 @@ public class Util {
     }
 
     original.copyFrom(newEvent, startDate);
-    calendar.createEvent(original);
+    calendar.createEvent(newEvent);
   }
 
   private static void applyUpdates(Event event, EventUpdate update) {
@@ -54,6 +54,7 @@ public class Util {
       setIfNotNull(update.getRecurrenceDays(), recurringEvent::setRecurrenceDays);
       setIfNotNull(update.getRepeatCount(), recurringEvent::setRepeatCount);
       setIfNotNull(update.getRecurrenceEndDate(), recurringEvent::setRecurrenceEndDate);
+      recurringEvent.generateSingleEvents();
     }
   }
 
