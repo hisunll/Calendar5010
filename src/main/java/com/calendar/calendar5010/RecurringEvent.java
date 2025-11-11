@@ -7,33 +7,33 @@ import lombok.Setter;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, doNotUseGetters = true)
 public class RecurringEvent extends Event{
   //required
+  @Getter(AccessLevel.NONE)
   private Set<DayOfWeek> recurrenceDays;
 
   //optional
   private Integer repeatCount;
   private LocalDate recurrenceEndDate;
   @Setter(AccessLevel.NONE)
-  private List<Event> events;
-
-  @Setter(AccessLevel.NONE)
-  private LocalDate toCopyEndDate;
+  @Getter(AccessLevel.NONE)
+  private List<Event> events = new ArrayList<>();
 
   private RecurringEvent(Builder builder) {
     super(builder);
     this.recurrenceDays = builder.recurrenceDays;
     this.repeatCount = builder.repeatCount;
     this.recurrenceEndDate = builder.recurrenceEndDate;
-    postBuild();
+  }
+
+
+  public Set<DayOfWeek> getRecurrenceDays() {
+    return Collections.unmodifiableSet(recurrenceDays);
   }
 
   @Override
@@ -75,7 +75,9 @@ public class RecurringEvent extends Event{
 
     @Override
     public RecurringEvent build() {
-      return new RecurringEvent(this);
+      RecurringEvent event = new RecurringEvent(this);
+      event.postBuild();
+      return event;
     }
   }
 
@@ -139,10 +141,10 @@ public class RecurringEvent extends Event{
 
   @Override
   protected void setTimeIntervals() {
-    getTimeIntervals().clear();
+    this.timeIntervals.clear();
 
     for(Event event : events) {
-      getTimeIntervals().addAll(event.getTimeIntervals());
+      this.timeIntervals.addAll(event.timeIntervals);
     }
   }
 
@@ -170,16 +172,16 @@ public class RecurringEvent extends Event{
   @Override
   public RecurringEvent deepCopy() {
     RecurringEvent copyEvent = this.toBuilder().build();
-    copyEvent.getEvents().clear();
+    copyEvent.events.clear();
     for (Event event : this.events) {
-      copyEvent.getEvents().add(event.deepCopy());
+      copyEvent.events.add(event.deepCopy());
     }
     return copyEvent;
   }
 
   @Override
   public void prepareForUpdate() {
-    this.getEvents().removeIf(e ->
+    events.removeIf(e ->
       e.getStartDate().isBefore(getStartDate())
     );
     setTimeIntervals();
@@ -187,7 +189,7 @@ public class RecurringEvent extends Event{
 
   @Override
   public List<Event> getListEvents() {
-    return events;
+    return Collections.unmodifiableList(events);
   }
 
   @Override
@@ -209,10 +211,10 @@ public class RecurringEvent extends Event{
     this.setRecurrenceDays(event.getRecurrenceDays());
     this.setRepeatCount(event.getRepeatCount());
     LocalDate finalStartDateFilter = startDateFilter;
-    this.getEvents().removeIf(ee ->
+    events.removeIf(ee ->
       !ee.getStartDate().isBefore(finalStartDateFilter)
     );
-    this.getEvents().addAll(event.getListEvents());
+    events.addAll(event.getListEvents());
     this.setTimeIntervals();
   }
 }

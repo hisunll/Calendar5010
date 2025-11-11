@@ -20,8 +20,6 @@ public class SingleEvent extends Event {
     super(builder);
     this.belongsToRecurringEvent = builder.belongsToRecurringEvent != null ? builder.belongsToRecurringEvent : false;
     this.fatherId = builder.fatherId;
-
-    postBuild();
   }
 
   public static class Builder extends Event.Builder<Builder> {
@@ -45,7 +43,9 @@ public class SingleEvent extends Event {
 
     @Override
     public SingleEvent build() {
-      return new SingleEvent(this);
+      SingleEvent event = new SingleEvent(this);
+      event.postBuild();
+      return event;
     }
   }
 
@@ -85,7 +85,7 @@ public class SingleEvent extends Event {
 
   @Override
   protected void setTimeIntervals() {
-    getTimeIntervals().clear();
+    this.timeIntervals.clear();
     LocalDate startDate = getStartDate();
     LocalTime startTime = getStartTime();
     LocalDate endDate = getEndDate();
@@ -96,7 +96,7 @@ public class SingleEvent extends Event {
       LocalTime currentStart = (now.equals(startDate)) ? startTime : LocalTime.MIN;
       LocalTime currentEnd = (now.equals(endDate)) ? endTime : LocalTime.MAX;
       TimeInterval interval = new TimeInterval(id, now, currentStart, currentEnd);
-      getTimeIntervals().add(interval);
+      this.timeIntervals.add(interval);
     }
   }
 

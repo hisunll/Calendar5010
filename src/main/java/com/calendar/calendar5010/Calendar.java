@@ -1,5 +1,6 @@
 package com.calendar.calendar5010;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
@@ -13,11 +14,22 @@ import java.util.*;
 @Setter
 public class Calendar {
   private String title;
-  private Map<String, Event> events = new HashMap<>();
   private Boolean allowConflict =  false;
+
+  @Setter(AccessLevel.NONE)
+  @Getter(AccessLevel.NONE)
+  private Map<String, Event> events = new HashMap<>();
+
+  @Setter(AccessLevel.NONE)
+  @Getter(AccessLevel.NONE)
   private Map<String, Event> eventsId = new HashMap<>();
+
+  @Setter(AccessLevel.NONE)
+  @Getter(AccessLevel.NONE)
   private Map<String, RecurringEvent> recurringEvents = new HashMap<>();
 
+  @Setter(AccessLevel.NONE)
+  @Getter(AccessLevel.NONE)
   private final Map<LocalDate, Set<TimeInterval>> dailyBuckets = new HashMap<>();
 
   public Calendar(String title) {
@@ -27,6 +39,19 @@ public class Calendar {
   public Calendar(String title, Boolean allowConflict) {
     this.title = title;
     this.allowConflict = allowConflict;
+  }
+
+  public Map<String, Event> getEventsId() {
+    return Collections.unmodifiableMap(eventsId);
+  }
+
+  public Map<String, Event> getEvents() {
+    return Collections.unmodifiableMap(events);
+  }
+
+
+  public Map<String, RecurringEvent> getRecurringEvents() {
+    return Collections.unmodifiableMap(recurringEvents);
   }
 
   private Boolean checkConflictDaily(TimeInterval timeInterval, Set<TimeInterval> timeIntervals) {

@@ -7,10 +7,7 @@ import lombok.Setter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 @Getter
 @Setter
@@ -28,11 +25,19 @@ public abstract class Event {
   private LocalTime endTime;
   private String description;
   private String location;
+
   @Getter(AccessLevel.NONE)
   private Boolean allowConflict;
   private Visibility visibility;
+
   @Setter(AccessLevel.NONE)
-  private List<TimeInterval> timeIntervals;
+  @Getter(AccessLevel.NONE)
+  protected final List<TimeInterval> timeIntervals = new ArrayList<>();
+
+
+  public List<TimeInterval> getTimeIntervals() {
+    return Collections.unmodifiableList(timeIntervals);
+  }
 
   protected Event(Builder<?> builder) {
     this.subject = builder.subject;
@@ -44,7 +49,6 @@ public abstract class Event {
     this.location = builder.location;
     this.allowConflict = builder.allowConflict;
     this.visibility = builder.visibility != null ? builder.visibility : Visibility.PUBLIC;
-    this.timeIntervals = new ArrayList<>();
     if (this.visibility == null) {
       this.visibility = Visibility.PUBLIC;
     }
@@ -191,18 +195,6 @@ public abstract class Event {
   public abstract Event deepCopy();
 
   public abstract void prepareForUpdate();
-
-  public void copyFrom(Event event) {
-    this.subject = event.subject;
-    this.startDate = event.startDate;
-    this.startTime = event.startTime;
-    this.endDate = event.endDate;
-    this.endTime = event.endTime;
-    this.description = event.description;
-    this.location = event.location;
-    this.allowConflict = event.allowConflict;
-    this.visibility = event.visibility;
-  }
 
   protected abstract void setTimeIntervals();
   public abstract List<Event> getListEvents();

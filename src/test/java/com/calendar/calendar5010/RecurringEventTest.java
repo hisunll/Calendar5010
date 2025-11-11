@@ -158,4 +158,5 @@ class RecurringEventTest {
     Event unmodifiedInstance = calendar.getEvent("Team Huddle", START_DATE, START_TIME);
     assertNull(unmodifiedInstance.getLocation());
   }
+
 }

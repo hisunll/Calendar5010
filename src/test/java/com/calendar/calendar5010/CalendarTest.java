@@ -207,7 +207,7 @@ class CalendarTest {
     List<Event> children = new ArrayList<>(rec.getListEvents());
     Event third = children.get(children.size() - 1);
     String keyThird = third.getSubject() + third.getStartDate() + third.getStartTime();
-    calendar.getEvents().remove(keyThird);
+    calendar.deleteEventTemp(third);
 
     IllegalArgumentException ex = assertThrows(IllegalArgumentException.class, () -> calendar.deleteEventTemp(rec));
     assertTrue(ex.getMessage().contains("Event does not exist"));
