@@ -5,6 +5,7 @@ import lombok.NonNull;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
 
@@ -88,7 +89,7 @@ public class Calendar {
   }
 
   public void createEvent(@NonNull Event event) {
-    if (event.getAllowConflict() == null) {
+    if (event.checkAllowConflictNull()) {
       event.setAllowConflict(allowConflict);
     }
 
@@ -141,6 +142,10 @@ public class Calendar {
         events.put(entry.getKey(), entry.getValue());
         eventsId.put(entry.getValue().getId(), entry.getValue());
       }
+      if (event instanceof RecurringEvent) {
+        RecurringEvent recurringEvent = (RecurringEvent) event;
+        recurringEvents.put(recurringEvent.getId(), recurringEvent);
+      }
       throw e;
     }
 
@@ -174,7 +179,9 @@ public class Calendar {
   }
 
   public Boolean isBusy(LocalDate date, LocalTime time) {
-    TimeInterval timeInterval = new TimeInterval("temp", date, time, time);
+    LocalDateTime dateTime = LocalDateTime.of(date, time);
+    LocalDateTime oneMinuteBefore = dateTime.minusMinutes(1);
+    TimeInterval timeInterval = new TimeInterval("temp", date, oneMinuteBefore.toLocalTime(), time);
     return checkConflictDaily(timeInterval, dailyBuckets.get(date));
   }
 

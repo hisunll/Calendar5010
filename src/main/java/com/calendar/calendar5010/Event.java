@@ -28,6 +28,7 @@ public abstract class Event {
   private LocalTime endTime;
   private String description;
   private String location;
+  @Getter(AccessLevel.NONE)
   private Boolean allowConflict;
   private Visibility visibility;
   @Setter(AccessLevel.NONE)
@@ -41,7 +42,7 @@ public abstract class Event {
     this.endTime = builder.endTime;
     this.description = builder.description;
     this.location = builder.location;
-    this.allowConflict = builder.allowConflict != null ? builder.allowConflict : false;
+    this.allowConflict = builder.allowConflict;
     this.visibility = builder.visibility != null ? builder.visibility : Visibility.PUBLIC;
     this.timeIntervals = new ArrayList<>();
     if (this.visibility == null) {
@@ -66,6 +67,17 @@ public abstract class Event {
     if(this.id == null) {
       this.id = UUID.randomUUID().toString();
     }
+  }
+
+  public Boolean getAllowConflict() {
+    if (this.allowConflict == null) {
+      return false;
+    }
+    return allowConflict;
+  }
+
+  public boolean checkAllowConflictNull() {
+    return this.allowConflict == null;
   }
 
   public static abstract class Builder<T extends Builder<T>> {

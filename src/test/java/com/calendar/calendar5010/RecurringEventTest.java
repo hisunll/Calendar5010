@@ -90,6 +90,7 @@ class RecurringEventTest {
     RecurringEvent newRecurringEvent = RecurringEvent.builder()
       .subject("Daily Standup").startDate(START_DATE).endDate(START_DATE).startTime(START_TIME).endTime(END_TIME)
       .recurrenceDays(MONDAY_WEDNESDAY)
+      .allowConflict(false)
       .repeatCount(5)
       .build();
 
@@ -131,6 +132,7 @@ class RecurringEventTest {
       .subject("Team Huddle").startDate(START_DATE).endDate(START_DATE).startTime(START_TIME).endTime(END_TIME)
       .recurrenceDays(Set.of(DayOfWeek.MONDAY))
       .repeatCount(2)
+      .allowConflict(false)
       .build();
     calendar.createEvent(recurringEvent);
 
