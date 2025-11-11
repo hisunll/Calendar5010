@@ -1,16 +1,15 @@
 package com.calendar.calendar5010;
 
-import lombok.NonNull;
-
 import java.time.LocalDate;
 import java.util.function.Consumer;
+import lombok.NonNull;
 
 public class Util {
   public static ValidationResult checkIsValid(Event event, Calendar calendar) {
     ValidationResult validationResultEvent = event.checkIsValid();
     ValidationResult validationResultCalendar;
     validationResultCalendar = calendar.checkIsValid(event.getListEvents());
-    if(!validationResultCalendar.getValid()) {
+    if (!validationResultCalendar.getValid()) {
       return validationResultCalendar;
     }
 
@@ -19,11 +18,11 @@ public class Util {
 
   public static void updateEvent(@NonNull Calendar calendar, @NonNull Event original,
                                  @NonNull EventUpdate update, LocalDate startDate) {
-    Event newEvent = original.deepCopy();
     Event oldEvent = original.deepCopy();
     setIfNotNull(startDate, oldEvent::setStartDate);
     setIfNotNull(startDate, update::setStartDate);
     oldEvent.prepareForUpdate();
+    Event newEvent = original.deepCopy();
     applyUpdates(newEvent, update);
     newEvent.prepareForUpdate();
     calendar.deleteEventTemp(oldEvent);

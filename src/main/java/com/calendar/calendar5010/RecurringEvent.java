@@ -1,23 +1,23 @@
 package com.calendar.calendar5010;
 
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.*;
-
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true, doNotUseGetters = true)
-public class RecurringEvent extends Event{
-  //required
+public class RecurringEvent extends Event {
   @Getter(AccessLevel.NONE)
   private Set<DayOfWeek> recurrenceDays;
-
-  //optional
   private Integer repeatCount;
   private LocalDate recurrenceEndDate;
   @Setter(AccessLevel.NONE)
@@ -39,7 +39,7 @@ public class RecurringEvent extends Event{
   @Override
   protected void postBuild() {
     ValidationResult validationResult = checkIsValid();
-    if(!validationResult.getValid()) {
+    if (!validationResult.getValid()) {
       throw new IllegalArgumentException(validationResult.getMessage());
     }
     super.postBuild();
@@ -107,7 +107,9 @@ public class RecurringEvent extends Event{
     LocalDate current = getStartDate();
     int count = 0;
 
-    LocalDate endLimit = recurrenceEndDate != null ? recurrenceEndDate : getEndDate().plusWeeks(repeatCount);
+    LocalDate endLimit = recurrenceEndDate != null
+        ? recurrenceEndDate
+        : getEndDate().plusWeeks(repeatCount);
 
     while (!current.isAfter(endLimit)) {
       if (recurrenceDays.contains(current.getDayOfWeek())) {
@@ -116,18 +118,18 @@ public class RecurringEvent extends Event{
         }
 
         SingleEvent singleEvent = SingleEvent.builder()
-          .subject(getSubject())
-          .startDate(current)
-          .startTime(getStartTime())
-          .endDate(current)
-          .endTime(getEndTime())
-          .visibility(getVisibility())
-          .description(getDescription())
-          .location(getLocation())
-          .allowConflict(getAllowConflict())
-          .belongsToRecurringEvent(true)
-          .fatherId(getId())
-          .build();
+            .subject(getSubject())
+            .startDate(current)
+            .startTime(getStartTime())
+            .endDate(current)
+            .endTime(getEndTime())
+            .visibility(getVisibility())
+            .description(getDescription())
+            .location(getLocation())
+            .allowConflict(getAllowConflict())
+            .belongsToRecurringEvent(true)
+            .fatherId(getId())
+            .build();
 
         this.events.add(singleEvent);
         count++;
@@ -143,15 +145,13 @@ public class RecurringEvent extends Event{
   protected void setTimeIntervals() {
     this.timeIntervals.clear();
 
-    for(Event event : events) {
+    for (Event event : events) {
       this.timeIntervals.addAll(event.timeIntervals);
     }
   }
 
   @Override
-  public ValidationResult checkIsValid(){
-    LocalDate startDate = getStartDate();
-    LocalDate endDate = getEndDate();
+  public ValidationResult checkIsValid() {
     super.checkIsValid();
 
     if (recurrenceDays == null) {
@@ -162,7 +162,10 @@ public class RecurringEvent extends Event{
       return ValidationResult.error("Missing required parameters.");
     }
 
-    if(startDate.isBefore(endDate)){
+    LocalDate startDate = getStartDate();
+    LocalDate endDate = getEndDate();
+
+    if (startDate.isBefore(endDate)) {
       return ValidationResult.error("Recurring event cannot cross day");
     }
 
@@ -182,7 +185,7 @@ public class RecurringEvent extends Event{
   @Override
   public void prepareForUpdate() {
     events.removeIf(e ->
-      e.getStartDate().isBefore(getStartDate())
+        e.getStartDate().isBefore(getStartDate())
     );
     setTimeIntervals();
   }
@@ -196,7 +199,7 @@ public class RecurringEvent extends Event{
   public void copyFrom(Event e, LocalDate startDateFilter) {
     RecurringEvent event = (RecurringEvent) e;
     this.setSubject(event.getSubject());
-    if(startDateFilter == null) {
+    if (startDateFilter == null) {
       this.setStartDate(event.getStartDate());
       this.setStartTime(event.getStartTime());
       startDateFilter = event.getStartDate();
@@ -212,7 +215,7 @@ public class RecurringEvent extends Event{
     this.setRepeatCount(event.getRepeatCount());
     LocalDate finalStartDateFilter = startDateFilter;
     events.removeIf(ee ->
-      !ee.getStartDate().isBefore(finalStartDateFilter)
+        !ee.getStartDate().isBefore(finalStartDateFilter)
     );
     events.addAll(event.getListEvents());
     this.setTimeIntervals();

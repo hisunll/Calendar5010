@@ -1,13 +1,12 @@
 package com.calendar.calendar5010;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -18,7 +17,8 @@ public class SingleEvent extends Event {
 
   private SingleEvent(Builder builder) {
     super(builder);
-    this.belongsToRecurringEvent = builder.belongsToRecurringEvent != null ? builder.belongsToRecurringEvent : false;
+    this.belongsToRecurringEvent = builder.belongsToRecurringEvent != null 
+        ? builder.belongsToRecurringEvent : false;
     this.fatherId = builder.fatherId;
   }
 
@@ -56,11 +56,11 @@ public class SingleEvent extends Event {
   @Override
   protected void postBuild() {
     ValidationResult validationResult = checkIsValid();
-    if(!validationResult.getValid()) {
+    if (!validationResult.getValid()) {
       throw new IllegalArgumentException(validationResult.getMessage());
     }
     super.postBuild();
-    if(this.belongsToRecurringEvent == null) {
+    if (this.belongsToRecurringEvent == null) {
       this.belongsToRecurringEvent = false;
     }
     setTimeIntervals();
