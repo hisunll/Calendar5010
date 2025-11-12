@@ -1,4 +1,4 @@
-package com.calendar.calendar5010;
+package com.calendar.calendar5010.model;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -20,8 +20,8 @@ public class SingleEvent extends Event {
 
   private SingleEvent(Builder builder) {
     super(builder);
-    this.belongsToRecurringEvent = builder.belongsToRecurringEvent != null 
-        ? builder.belongsToRecurringEvent : false;
+    this.belongsToRecurringEvent = builder.belongsToRecurringEvent != null
+      ? builder.belongsToRecurringEvent : false;
     this.fatherId = builder.fatherId;
   }
 

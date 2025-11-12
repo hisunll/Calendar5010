@@ -1,5 +1,6 @@
 package com.calendar.calendar5010;
 
+import com.calendar.calendar5010.model.TimeInterval;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;

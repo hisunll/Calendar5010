@@ -1,4 +1,4 @@
-package com.calendar.calendar5010;
+package com.calendar.calendar5010.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.calendar.calendar5010.model.CalendarListener;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;

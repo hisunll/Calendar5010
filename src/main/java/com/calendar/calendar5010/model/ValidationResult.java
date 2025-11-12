@@ -1,4 +1,4 @@
-package com.calendar.calendar5010;
+package com.calendar.calendar5010.model;
 
 import lombok.Getter;
 
