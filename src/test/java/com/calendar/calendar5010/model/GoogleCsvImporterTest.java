@@ -73,9 +73,12 @@ public class GoogleCsvImporterTest {
 
     // Step 4: verify imported data
     assertEquals(2, imported.getEventsId().size(), "Should import 2 events");
-
     List<Event> importedEvents = imported.getEventsId().values().stream().toList();
-    assertEquals("Team Meeting", importedEvents.get(0).getSubject());
-    assertEquals("Doctor Appointment", importedEvents.get(1).getSubject());
+    List<String> subjects = importedEvents.stream()
+      .map(Event::getSubject)
+      .toList();
+
+    assertTrue(subjects.contains("Team Meeting"), "Imported events should contain 'Team Meeting'");
+    assertTrue(subjects.contains("Doctor Appointment"), "Imported events should contain 'Doctor Appointment'");
   }
 }

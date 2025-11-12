@@ -10,17 +10,6 @@ import java.util.List;
  * CalendarPersistenceManager provides methods to save and restore
  * multiple {@link Calendar} instances to and from CSV files.
  *
- * <p>Each calendar is stored as a separate CSV file using
- * {@link GoogleCsvExporter} and {@link GoogleCsvImporter}.
- *
- * <p>File naming convention: {@code <calendar_title>.csv}
- *
- * Example:
- * <pre>
- *   saveAllCalendars(List.of(workCal, personalCal), Path.of("output/"));
- *   List<Calendar> restored = restoreAllCalendars(Path.of("output/"));
- * </pre>
- *
  * @author Liangliang Sun
  */
 public final class CalendarPersistenceManager {
@@ -49,8 +38,8 @@ public final class CalendarPersistenceManager {
           continue;
         }
         String safeName = cal.getTitle()
-          .replaceAll("[^a-zA-Z0-9-_]", "_")
-          .replaceAll("_+", "_");
+            .replaceAll("[^a-zA-Z0-9-_]", "_")
+            .replaceAll("_+", "_");
         Path csvPath = outputDir.resolve(safeName + ".csv");
         GoogleCsvExporter.export(cal, csvPath);
       }
@@ -75,9 +64,6 @@ public final class CalendarPersistenceManager {
     }
 
     File[] csvFiles = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".csv"));
-    if (csvFiles == null) {
-      return restored;
-    }
 
     for (File file : csvFiles) {
       String fileName = file.getName();
@@ -92,4 +78,5 @@ public final class CalendarPersistenceManager {
     }
     return restored;
   }
+
 }

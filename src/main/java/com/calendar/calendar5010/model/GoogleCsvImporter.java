@@ -63,16 +63,16 @@ public final class GoogleCsvImporter {
         LocalTime endTime = allDay ? LocalTime.MAX : parseTime(endTimeStr, timeFmt);
 
         SingleEvent event = SingleEvent.builder()
-          .subject(subject)
-          .startDate(startDate)
-          .startTime(startTime)
-          .endDate(endDate)
-          .endTime(endTime)
-          .description(description)
-          .location(location)
-          .visibility("True".equalsIgnoreCase(privateStr)
-            ? Event.Visibility.PRIVATE : Event.Visibility.PUBLIC)
-          .build();
+            .subject(subject)
+            .startDate(startDate)
+            .startTime(startTime)
+            .endDate(endDate)
+            .endTime(endTime)
+            .description(description)
+            .location(location)
+            .visibility("True".equalsIgnoreCase(privateStr)
+              ? Event.Visibility.PRIVATE : Event.Visibility.PUBLIC)
+            .build();
 
         calendar.createEvent(event);
       }
@@ -103,7 +103,9 @@ public final class GoogleCsvImporter {
    * Parse a CSV line while handling quoted fields containing commas or quotes.
    */
   private static String[] parseCsvLine(String line) {
-    if (line == null) return new String[0];
+    if (line == null) {
+      return new String[0];
+    }
     var result = new java.util.ArrayList<String>();
     StringBuilder current = new StringBuilder();
     boolean inQuotes = false;
@@ -128,7 +130,9 @@ public final class GoogleCsvImporter {
   }
 
   private static String unquote(String s) {
-    if (s == null) return "";
+    if (s == null) {
+      return "";
+    }
     s = s.trim();
     if (s.startsWith("\"") && s.endsWith("\"")) {
       s = s.substring(1, s.length() - 1);

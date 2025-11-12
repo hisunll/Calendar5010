@@ -21,7 +21,7 @@ public class SingleEvent extends Event {
   private SingleEvent(Builder builder) {
     super(builder);
     this.belongsToRecurringEvent = builder.belongsToRecurringEvent != null
-      ? builder.belongsToRecurringEvent : false;
+        ? builder.belongsToRecurringEvent : false;
     this.fatherId = builder.fatherId;
   }
 
