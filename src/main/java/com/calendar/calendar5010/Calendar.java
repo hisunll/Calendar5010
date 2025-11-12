@@ -10,6 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+import com.calendar.calendar5010.model.CalendarListener;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
@@ -42,6 +44,10 @@ public class Calendar {
   @Setter(AccessLevel.NONE)
   @Getter(AccessLevel.NONE)
   private final Map<LocalDate, Set<TimeInterval>> dailyBuckets = new HashMap<>();
+
+  @Setter(AccessLevel.NONE)
+  @Getter(AccessLevel.NONE)
+  private final List<CalendarListener> listeners = new ArrayList<>();
 
   /**
    * Construct a calendar with the given title.
@@ -79,6 +85,48 @@ public class Calendar {
    */
   public Map<String, RecurringEvent> getRecurringEvents() {
     return Collections.unmodifiableMap(recurringEvents);
+  }
+
+  /**
+   * Register a listener to this calendar instance.
+   *
+   * @param listener listener to add
+   */
+  public void addCalendarListener(CalendarListener listener) {
+    if (listener != null && !listeners.contains(listener)) {
+      listeners.add(listener);
+    }
+  }
+
+  /**
+   * Remove a previously registered listener from this calendar instance.
+   *
+   * @param listener listener to remove
+   */
+  public void removeCalendarListener(CalendarListener listener) {
+    listeners.remove(listener);
+  }
+
+  /**
+   * Notify all listeners that an event was added.
+   *
+   * @param event event that was added
+   */
+  protected void announceEventAdded(Event event) {
+    for (CalendarListener listener : listeners) {
+      listener.onEventAdded(event);
+    }
+  }
+
+  /**
+   * Notify all listeners that an event was modified.
+   *
+   * @param event event that was modified
+   */
+  protected void announceEventModified(Event event) {
+    for (CalendarListener listener : listeners) {
+      listener.onEventModified(event);
+    }
   }
 
   private Boolean checkConflictDaily(TimeInterval timeInterval, Set<TimeInterval> timeIntervals) {
@@ -164,6 +212,7 @@ public class Calendar {
     }
 
     addEvent(event);
+    announceEventAdded(event);
   }
 
   /**
@@ -234,6 +283,7 @@ public class Calendar {
    */
   public void updateEvent(@NonNull Event original, @NonNull EventUpdate update, LocalDate date) {
     Util.updateEvent(this, original, update, date);
+    announceEventModified(original);
   }
 
   /**
