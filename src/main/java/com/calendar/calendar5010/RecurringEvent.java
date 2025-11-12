@@ -12,6 +12,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * RecurringEvent represents events that repeat on specific days of the week.
+ */
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true, doNotUseGetters = true)
@@ -32,6 +35,11 @@ public class RecurringEvent extends Event {
   }
 
 
+  /**
+   * Returns an unmodifiable set of DayOfWeek objects representing days to recur.
+   *
+   * @return an unmodifiable set of time DayOfWeek
+   */
   public Set<DayOfWeek> getRecurrenceDays() {
     return Collections.unmodifiableSet(recurrenceDays);
   }
@@ -48,21 +56,50 @@ public class RecurringEvent extends Event {
     setTimeIntervals();
   }
 
+  /**
+   * Builder for RecurringEvent supporting days of week, repeat count, and end date.
+   */
   public static class Builder extends Event.Builder<Builder> {
     private Set<DayOfWeek> recurrenceDays;
     private Integer repeatCount;
     private LocalDate recurrenceEndDate;
 
+    /**
+     * Base constructor for subclasses of {@code Builder}.
+     */
+    protected Builder() {
+    }
+
+    /**
+     * Sets the days of week on which the event recurs (required).
+     *
+     * @param recurrenceDays set of days of week
+     * @return this builder
+     */
     public Builder recurrenceDays(Set<DayOfWeek> recurrenceDays) {
       this.recurrenceDays = recurrenceDays;
       return this;
     }
 
+    /**
+     * Sets the maximum number of occurrences (optional). At least one of
+     * {@link #repeatCount(Integer)} or {@link #recurrenceEndDate(LocalDate)} must be provided.
+     *
+     * @param repeatCount upper bound of occurrences
+     * @return this builder
+     */
     public Builder repeatCount(Integer repeatCount) {
       this.repeatCount = repeatCount;
       return this;
     }
 
+    /**
+     * Sets the recurrence end date (optional). At least one of
+     * {@link #repeatCount(Integer)} or {@link #recurrenceEndDate(LocalDate)} must be provided.
+     *
+     * @param recurrenceEndDate end date of recurrence
+     * @return this builder
+     */
     public Builder recurrenceEndDate(LocalDate recurrenceEndDate) {
       this.recurrenceEndDate = recurrenceEndDate;
       return this;
@@ -81,10 +118,16 @@ public class RecurringEvent extends Event {
     }
   }
 
+  /**
+   * Create a new builder instance.
+   *
+   * @return new RecurringEvent builder
+   */
   public static Builder builder() {
     return new Builder();
   }
 
+  @Override
   public Builder toBuilder() {
     return RecurringEvent.builder()
       .id(this.getId())
@@ -102,6 +145,9 @@ public class RecurringEvent extends Event {
       .recurrenceEndDate(this.recurrenceEndDate);
   }
 
+  /**
+   * Generate child single events according to recurrence rules.
+   */
   protected void generateSingleEvents() {
     this.events.clear();
     LocalDate current = getStartDate();

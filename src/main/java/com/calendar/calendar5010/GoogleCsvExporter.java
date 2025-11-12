@@ -10,6 +10,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * GoogleCsvExporter provides the ability to export a {@link Calendar}
+ *     to a Google Calendar-compatible CSV.
+ */
 public final class GoogleCsvExporter {
   private GoogleCsvExporter() {}
 
@@ -21,6 +25,12 @@ public final class GoogleCsvExporter {
     return allDay || t == null ? "" : t.format(fmt);
   }
 
+  /**
+   * Export the given {@link Calendar} to a Google Calendar CSV string.
+   *
+   * @param calendar calendar instance to export
+   * @return CSV string compatible with Google Calendar import
+   */
   public static String export(Calendar calendar) {
     String header = "Subject," + "Start Date,"
         + "Start Time," + "End Date,"
@@ -67,6 +77,13 @@ public final class GoogleCsvExporter {
     return sb.toString();
   }
 
+  /**
+   * Export the given {@link Calendar} to CSV and write it to the specified path.
+   *
+   * @param calendar calendar instance to export
+   * @param outputPath destination file path
+   * @throws RuntimeException when writing fails
+   */
   public static void export(Calendar calendar, Path outputPath) {
     String csv = export(calendar);
     try {

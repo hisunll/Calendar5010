@@ -8,6 +8,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * SingleEvent represents a one-off event.
+ */
 @Getter
 @Setter
 @EqualsAndHashCode(callSuper = true)
@@ -22,15 +25,36 @@ public class SingleEvent extends Event {
     this.fatherId = builder.fatherId;
   }
 
+  /**
+   * Builder for SingleEvent, supporting association with a recurring event.
+   */
   public static class Builder extends Event.Builder<Builder> {
     private Boolean belongsToRecurringEvent;
     private String fatherId;
 
+    /**
+     * Base constructor for subclasses of {@code Builder}.
+     */
+    protected Builder() {
+    }
+
+    /**
+     * Sets whether this event belongs to a {@link RecurringEvent}.
+     *
+     * @param belongsToRecurringEvent indicates this event belongs to a recurring event or not
+     * @return this builder
+     */
     public Builder belongsToRecurringEvent(Boolean belongsToRecurringEvent) {
       this.belongsToRecurringEvent = belongsToRecurringEvent;
       return this;
     }
 
+    /**
+     * Sets the parent recurring event id.
+     *
+     * @param fatherId parent event id
+     * @return this builder
+     */
     public Builder fatherId(String fatherId) {
       this.fatherId = fatherId;
       return this;
@@ -49,6 +73,11 @@ public class SingleEvent extends Event {
     }
   }
 
+  /**
+   * Create a new builder instance.
+   *
+   * @return new SingleEvent builder
+   */
   public static Builder builder() {
     return new Builder();
   }
@@ -66,6 +95,7 @@ public class SingleEvent extends Event {
     setTimeIntervals();
   }
 
+  @Override
   public Builder toBuilder() {
     return SingleEvent.builder()
       .id(this.getId())

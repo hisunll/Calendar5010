@@ -4,7 +4,19 @@ import java.time.LocalDate;
 import java.util.function.Consumer;
 import lombok.NonNull;
 
+/**
+ * Utility helpers for event validation and safe calendar updates.
+ */
 public class Util {
+  private Util() {}
+
+  /**
+   * Validates the given event both individually and against the calendar.
+   *
+   * @param event the event to validate
+   * @param calendar the calendar used to check for conflicts
+   * @return a {@link ValidationResult} indicating validity or providing an error message
+   */
   public static ValidationResult checkIsValid(Event event, Calendar calendar) {
     ValidationResult validationResultEvent = event.checkIsValid();
     ValidationResult validationResultCalendar;
@@ -16,6 +28,15 @@ public class Util {
     return validationResultEvent;
   }
 
+  /**
+   * Applies a partial update to an existing event in the calendar safely.
+   *
+   * @param calendar the calendar to update
+   * @param original the original event that will be updated
+   * @param update the update payload containing optional fields
+   * @param startDate the date from which the update is considered effective
+   * @throws IllegalArgumentException when the updated event is invalid
+   */
   public static void updateEvent(@NonNull Calendar calendar, @NonNull Event original,
                                  @NonNull EventUpdate update, LocalDate startDate) {
     Event oldEvent = original.deepCopy();

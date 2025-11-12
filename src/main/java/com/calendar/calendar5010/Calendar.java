@@ -18,6 +18,8 @@ import lombok.Setter;
 /**
  * Calendar maintains the event collections, performs conflict checks.
  * It provides core operations for create, update, and query.
+ *
+ * @author Liangliang Sun
  */
 @Getter
 @Setter
@@ -62,18 +64,18 @@ public class Calendar {
   }
 
   /**
-   * Get the map of id and event.
+   * Returns an unmodifiable view of the map containing all events indexed by their IDs.
    *
-   * @return eventsId
+   * @return an unmodifiable map of event IDs to {@link Event} objects
    */
   public Map<String, Event> getEventsId() {
     return Collections.unmodifiableMap(eventsId);
   }
 
   /**
-   * Get the map of id and recurring event.
+   * Returns an unmodifiable view of the map containing all recurring events indexed by their IDs.
    *
-   * @return recurringEvents
+   * @return an unmodifiable map of event IDs to {@link RecurringEvent} objects
    */
   public Map<String, RecurringEvent> getRecurringEvents() {
     return Collections.unmodifiableMap(recurringEvents);
