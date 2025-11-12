@@ -1,13 +1,16 @@
 package com.calendar.calendar5010;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -15,11 +18,9 @@ public abstract class Event {
   @Setter(AccessLevel.NONE)
   private String id;
 
-  // required
   private String subject;
   private LocalDate startDate;
 
-  //optional
   private LocalTime startTime;
   private LocalDate endDate;
   private LocalTime endTime;
@@ -62,13 +63,13 @@ public abstract class Event {
     if (this.visibility == null) {
       this.visibility = Visibility.PUBLIC;
     }
-    if(endTime == null){
+    if (endTime == null) {
       endTime = LocalTime.MAX;
     }
-    if(startTime == null){
+    if (startTime == null) {
       startTime = LocalTime.MIN;
     }
-    if(this.id == null) {
+    if (this.id == null) {
       this.id = UUID.randomUUID().toString();
     }
   }
@@ -84,7 +85,7 @@ public abstract class Event {
     return this.allowConflict == null;
   }
 
-  public static abstract class Builder<T extends Builder<T>> {
+  public abstract static class Builder<T extends Builder<T>> {
     private String subject;
     private LocalDate startDate;
     private LocalTime startTime;
@@ -147,6 +148,7 @@ public abstract class Event {
     }
 
     protected abstract T self();
+    
     public abstract Event build();
   }
 
@@ -154,7 +156,7 @@ public abstract class Event {
     PUBLIC, PRIVATE
   }
 
-  public ValidationResult checkIsValid(){
+  public ValidationResult checkIsValid() {
     LocalDate startDate = getStartDate();
     LocalTime startTime = getStartTime();
     LocalDate endDate = getEndDate();
@@ -169,7 +171,7 @@ public abstract class Event {
       return ValidationResult.error("Missing required parameters.");
     }
 
-    if(getEndDateTime().isBefore(getStartDateTime())){
+    if (getEndDateTime().isBefore(getStartDateTime())) {
       return ValidationResult.error("End time cannot be before start time");
     }
 
@@ -177,7 +179,7 @@ public abstract class Event {
   }
 
   public LocalDateTime getStartDateTime() {
-    if(startTime != null) {
+    if (startTime != null) {
       return startDate.atTime(startTime);
     } else  {
       return startDate.atStartOfDay();
@@ -185,7 +187,7 @@ public abstract class Event {
   }
 
   public LocalDateTime getEndDateTime() {
-    if(endTime != null) {
+    if (endTime != null) {
       return endDate.atTime(endTime);
     } else  {
       return startDate.atTime(LocalTime.MAX);
@@ -197,7 +199,9 @@ public abstract class Event {
   public abstract void prepareForUpdate();
 
   protected abstract void setTimeIntervals();
+
   public abstract List<Event> getListEvents();
+
   public abstract void copyFrom(Event event, LocalDate startDate);
 
   @Override

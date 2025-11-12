@@ -3,6 +3,7 @@ package com.calendar.calendar5010;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -12,16 +13,28 @@ import java.util.List;
 public final class GoogleCsvExporter {
   private GoogleCsvExporter() {}
 
+  private static String fmtDate(LocalDate d, DateTimeFormatter fmt) {
+    return d == null ? "" : d.format(fmt);
+  }
+
+  private static String fmtTime(LocalTime t, boolean allDay, DateTimeFormatter fmt) {
+    return allDay || t == null ? "" : t.format(fmt);
+  }
+
   public static String export(Calendar calendar) {
-    String header = "Subject,Start Date,Start Time,End Date,End Time,All Day Event,Description,Location,Private";
+    String header = "Subject," + "Start Date,"
+        + "Start Time," + "End Date,"
+        + "End Time," + "All Day Event,"
+        + "Description," + "Location,"
+        + "Private";
     DateTimeFormatter dateFmt = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("hh:mm a", java.util.Locale.US);
 
     List<Event> allEvents = new ArrayList<>(calendar.getEventsId().values());
     allEvents.sort(Comparator
-      .comparing(Event::getStartDate)
-      .thenComparing(Event::getStartTime)
-      .thenComparing(Event::getSubject, Comparator.nullsLast(String::compareTo))
+        .comparing(Event::getStartDate)
+        .thenComparing(Event::getStartTime)
+        .thenComparing(Event::getSubject, Comparator.nullsLast(String::compareTo))
     );
 
     StringBuilder sb = new StringBuilder();
@@ -30,10 +43,10 @@ public final class GoogleCsvExporter {
     for (Event e : allEvents) {
       boolean allDay = isAllDay(e);
       String subject = csvEscape(e.getSubject());
-      String startDate = e.getStartDate() != null ? e.getStartDate().format(dateFmt) : "";
-      String startTime = allDay ? "" : (e.getStartTime() != null ? e.getStartTime().format(timeFmt) : "");
-      String endDate = e.getEndDate() != null ? e.getEndDate().format(dateFmt) : "";
-      String endTime = allDay ? "" : (e.getEndTime() != null ? e.getEndTime().format(timeFmt) : "");
+      String startDate = fmtDate(e.getStartDate(), dateFmt);
+      String startTime = fmtTime(e.getStartTime(), allDay, timeFmt);
+      String endDate = fmtDate(e.getEndDate(), dateFmt);
+      String endTime = fmtTime(e.getEndTime(), allDay, timeFmt);
       String allDayStr = allDay ? "True" : "False";
       String description = csvEscape(e.getDescription());
       String location = csvEscape(e.getLocation());
@@ -59,14 +72,15 @@ public final class GoogleCsvExporter {
     try {
       Files.writeString(outputPath, csv, StandardCharsets.UTF_8);
     } catch (Exception ex) {
-      throw new RuntimeException("Failed to write CSV to " + outputPath + ": " + ex.getMessage(), ex);
+      String msg = "Failed to write CSV to " + outputPath + ": " + ex.getMessage();
+      throw new RuntimeException(msg, ex);
     }
   }
 
   private static boolean isAllDay(Event e) {
     return (e.getStartTime() != null && e.getEndTime() != null
-      && e.getStartTime().equals(LocalTime.MIN)
-      && e.getEndTime().equals(LocalTime.MAX));
+        && e.getStartTime().equals(LocalTime.MIN)
+        && e.getEndTime().equals(LocalTime.MAX));
   }
 
   private static String csvEscape(String s) {
@@ -74,8 +88,12 @@ public final class GoogleCsvExporter {
       return "";
     }
     String escaped = s.replace("\"", "\"\"");
-    boolean mustQuote = escaped.contains(",") || escaped.contains("\"") || escaped.contains("\n") || escaped.contains("\r") ||
-      escaped.startsWith(" ") || escaped.endsWith(" ");
+    boolean mustQuote = escaped.contains(",")
+        || escaped.contains("\"")
+        || escaped.contains("\n")
+        || escaped.contains("\r")
+        || escaped.startsWith(" ")
+        || escaped.endsWith(" ");
     return mustQuote ? ('\"' + escaped + '\"') : escaped;
   }
 }
