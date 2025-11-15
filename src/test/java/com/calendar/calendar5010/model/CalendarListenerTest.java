@@ -1,6 +1,6 @@
 package com.calendar.calendar5010.model;
 
-import controller.CalendarController;
+import com.calendar.calendar5010.controller.CalendarController;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.api.Test;
