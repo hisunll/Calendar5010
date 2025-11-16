@@ -60,6 +60,7 @@ public class Util {
   }
 
   private static void applyUpdates(Event event, EventUpdate update) {
+    setIfNotNull(update.getSubject(), event::setSubject);
     setIfNotNull(update.getStartDate(), event::setStartDate);
     setIfNotNull(update.getStartTime(), event::setStartTime);
     setIfNotNull(update.getEndTime(), event::setEndTime);

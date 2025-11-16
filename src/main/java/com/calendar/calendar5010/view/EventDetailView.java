@@ -99,9 +99,9 @@ public class EventDetailView extends JFrame {
           .build();
 
       calendar.updateEvent(event, update, event.getStartDate());
-      appController.getListView().refreshList();
       JOptionPane.showMessageDialog(this, "Event updated!");
 
+      appController.getListView().refreshList();
     } catch (Exception ex) {
       JOptionPane.showMessageDialog(this,
           "Error saving: " + ex.getMessage(),
@@ -109,4 +109,15 @@ public class EventDetailView extends JFrame {
           JOptionPane.ERROR_MESSAGE);
     }
   }
+
+  public void loadEvent() {
+    subjectField.setText(event.getSubject());
+    startDateField.setText(event.getStartDate().toString());
+    startTimeField.setText(event.getStartTime().toString());
+    endDateField.setText(event.getEndDate().toString());
+    endTimeField.setText(event.getEndTime().toString());
+    descriptionField.setText(event.getDescription());
+    locationField.setText(event.getLocation());
+  }
+
 }

@@ -73,8 +73,13 @@ public class AppController {
    * @param event the event whose details should be displayed
    */
   public void showEventDetail(Event event) {
-    detailView = new EventDetailView(selected, event, this);
+    if (detailView == null) {
+      detailView = new EventDetailView(selected, event, this);
+    } else {
+      detailView.loadEvent(); // 让 detail view 更新内容
+    }
     detailView.setVisible(true);
+
   }
 
 }
