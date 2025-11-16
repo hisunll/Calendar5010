@@ -30,8 +30,11 @@ public final class CalendarPersistenceManager {
     try {
       File dir = outputDir.toFile();
       if (!dir.exists()) {
-        dir.mkdirs();
+        if (!dir.mkdirs() && !dir.exists()) {
+          throw new RuntimeException("Failed to create directory: " + outputDir);
+        }
       }
+
 
       for (Calendar cal : calendars) {
         if (cal.getTitle() == null || cal.getTitle().isEmpty()) {
@@ -64,6 +67,10 @@ public final class CalendarPersistenceManager {
     }
 
     File[] csvFiles = dir.listFiles((d, name) -> name.toLowerCase().endsWith(".csv"));
+
+    if (csvFiles == null) {
+      return restored;
+    }
 
     for (File file : csvFiles) {
       String fileName = file.getName();

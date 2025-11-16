@@ -23,13 +23,6 @@ public class CalendarController implements CalendarListener {
   private final List<Event> addedEvents = new ArrayList<>();
   @Getter(AccessLevel.NONE)
   private final List<Event> modifiedEvents = new ArrayList<>();
-  @Getter(AccessLevel.NONE)
-  private List<Calendar> calendars = new ArrayList<>();
-
-  private Calendar selectedCalendar;
-
-  private CreateEventView createEventView;
-  private EventDetailView eventDetailView;
 
   @Override
   public void onEventAdded(Event event) {
@@ -61,56 +54,6 @@ public class CalendarController implements CalendarListener {
    */
   public List<Event> getModifiedEvents() {
     return Collections.unmodifiableList(modifiedEvents);
-  }
-
-  /**
-   * Returns an unmodifiable view of the list containing all calendars.
-   *
-   * @return an unmodifiable list of {@link Calendar} objects
-   */
-  public List<Calendar> getCalendars() {
-    return Collections.unmodifiableList(calendars);
-  }
-
-  /**
-   * Restores all calendars from disk and selects one to work with.
-   *
-   * @param storagePath Directory where calendars are saved
-   */
-  public void restoreCalendars(Path storagePath) {
-    calendars = CalendarPersistenceManager.restoreAllCalendars(storagePath);
-
-    if (calendars.isEmpty()) {
-      selectedCalendar = new Calendar("Default Calendar");
-      calendars.add(selectedCalendar);
-    } else {
-      selectedCalendar = calendars.get(0);
-    }
-
-    selectedCalendar.addCalendarListener(this);
-  }
-
-  /**
-   * Creates and initializes the views.
-   * EventDetailView will show the first event if present.
-   *
-   * @throws IllegalStateException if {@code selectedCalendar} has not been set
-   */
-  public void buildViews() {
-    if (selectedCalendar == null) {
-      throw new IllegalStateException("restoreCalendars must be called first.");
-    }
-
-    createEventView = new CreateEventView(selectedCalendar);
-
-    Event eventToShow = selectedCalendar.getEventsId().values()
-        .stream()
-        .findFirst()
-        .orElse(null);
-
-    if (eventToShow != null) {
-      eventDetailView = new EventDetailView(selectedCalendar, eventToShow);
-    }
   }
 
 }

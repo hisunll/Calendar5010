@@ -1,63 +1,112 @@
 package com.calendar.calendar5010.view;
 
+import com.calendar.calendar5010.controller.AppController;
 import com.calendar.calendar5010.model.Calendar;
 import com.calendar.calendar5010.model.Event;
 import com.calendar.calendar5010.model.EventUpdate;
+import java.awt.GridLayout;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
 
 /**
- * View responsible for displaying and modifying a specific Event.
- * This view does NOT check conflicts — Calendar handles validation.
+ * UI window for viewing and editing an event.
  */
-public class EventDetailView {
+public class EventDetailView extends JFrame {
 
   private final Calendar calendar;
   private final Event event;
+  private final AppController appController;
+
+  private JTextField subjectField;
+  private JTextField startDateField;
+  private JTextField startTimeField;
+  private JTextField endDateField;
+  private JTextField endTimeField;
+  private JTextField descriptionField;
+  private JTextField locationField;
+
+  private JButton saveButton = new JButton("Save Changes");
 
   /**
-   * Constructs a view for displaying and editing the details of a specific event.
+   * Constructs a window that displays and allows editing of the details
+   * of a specific event.
    *
    * @param calendar the calendar that owns the event
    * @param event the event whose details will be displayed and edited
+   * @param appController the controller responsible for coordinating updates
    */
-  public EventDetailView(Calendar calendar, Event event) {
+  @SuppressWarnings("EI_EXPOSE_REP2")
+  public EventDetailView(Calendar calendar, Event event, AppController appController) {
+    super("Event Details");
     this.calendar = calendar;
     this.event = event;
+    this.appController = appController;
+
+    setLayout(new GridLayout(0, 2, 5, 5));
+
+    subjectField = new JTextField(event.getSubject(), 15);
+    startDateField = new JTextField(event.getStartDate().toString(), 10);
+    startTimeField = new JTextField(event.getStartTime().toString(), 10);
+    endDateField = new JTextField(event.getEndDate().toString(), 10);
+    endTimeField = new JTextField(event.getEndTime().toString(), 10);
+    descriptionField = new JTextField(event.getDescription(), 15);
+    locationField = new JTextField(event.getLocation(), 15);
+
+    add(new JLabel("Subject:"));
+    add(subjectField);
+
+    add(new JLabel("Start Date:"));
+    add(startDateField);
+
+    add(new JLabel("Start Time:"));
+    add(startTimeField);
+
+    add(new JLabel("End Date:"));
+    add(endDateField);
+
+    add(new JLabel("End Time:"));
+    add(endTimeField);
+
+    add(new JLabel("Description:"));
+    add(descriptionField);
+
+    add(new JLabel("Location:"));
+    add(locationField);
+
+    add(saveButton);
+
+    saveButton.addActionListener(e -> handleSave());
+
+    setSize(350, 300);
+    setVisible(true);
   }
 
-  /**
-   * Shows event details (in a real UI, this would populate fields).
-   */
-  public Event getDisplayedEvent() {
-    return event;
-  }
+  private void handleSave() {
+    try {
+      EventUpdate update = EventUpdate.builder()
+          .subject(subjectField.getText())
+          .startDate(LocalDate.parse(startDateField.getText()))
+          .startTime(LocalTime.parse(startTimeField.getText()))
+          .endDate(LocalDate.parse(endDateField.getText()))
+          .endTime(LocalTime.parse(endTimeField.getText()))
+          .description(descriptionField.getText())
+          .location(locationField.getText())
+          .build();
 
-  /**
-   * User edits something and clicks "Save".
-   * This view constructs an EventUpdate and lets Calendar handle the update.
-   */
-  public void submitModifiedEvent(
-      String newSubject,
-      LocalDate newStartDate,
-      LocalTime newStartTime,
-      LocalDate newEndDate,
-      LocalTime newEndTime,
-      String newDescription,
-      String newLocation
-  ) {
+      calendar.updateEvent(event, update, event.getStartDate());
+      appController.getListView().refreshList();
+      JOptionPane.showMessageDialog(this, "Event updated!");
 
-    EventUpdate update = EventUpdate.builder()
-        .subject(newSubject)
-        .startDate(newStartDate)
-        .startTime(newStartTime)
-        .endDate(newEndDate)
-        .endTime(newEndTime)
-        .description(newDescription)
-        .location(newLocation)
-        .build();
-
-    // this view does not check conflict
-    calendar.updateEvent(event, update, event.getStartDate());
+    } catch (Exception ex) {
+      JOptionPane.showMessageDialog(this,
+          "Error saving: " + ex.getMessage(),
+          "Error",
+          JOptionPane.ERROR_MESSAGE);
+    }
   }
 }
