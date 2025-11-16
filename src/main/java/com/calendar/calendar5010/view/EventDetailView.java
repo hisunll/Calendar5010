@@ -110,6 +110,9 @@ public class EventDetailView extends JFrame {
     }
   }
 
+  /**
+   * Reloads the current event's data into all UI fields.
+   */
   public void loadEvent() {
     subjectField.setText(event.getSubject());
     startDateField.setText(event.getStartDate().toString());
