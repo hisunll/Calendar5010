@@ -29,7 +29,6 @@ public class CreateEventView extends JFrame {
   private JTextField locationField = new JTextField(15);
 
   private JButton createButton = new JButton("Create Event");
-  private AppController appController;
 
   /**
    * Constructs a small UI window for creating an event.
@@ -37,7 +36,6 @@ public class CreateEventView extends JFrame {
   public CreateEventView(Calendar calendar, AppController appController) {
     super("Create Event");
     this.calendar = calendar;
-    this.appController = appController;
 
     setLayout(new GridLayout(0, 2, 5, 5));
 
