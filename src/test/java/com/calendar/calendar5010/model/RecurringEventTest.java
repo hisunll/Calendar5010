@@ -1,6 +1,5 @@
-package com.calendar.calendar5010;
+package com.calendar.calendar5010.model;
 
-import com.calendar.calendar5010.model.*;
 import org.junit.jupiter.api.Test;
 import java.time.DayOfWeek;
 import java.time.LocalDate;

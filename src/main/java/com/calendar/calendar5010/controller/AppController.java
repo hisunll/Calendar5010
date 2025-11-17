@@ -45,6 +45,7 @@ public class AppController {
 
     // register listener
     selected.addCalendarListener(calendarListener);
+    calendars.add(selected);
   }
 
   /**
@@ -80,6 +81,15 @@ public class AppController {
     }
     detailView.setVisible(true);
 
+  }
+
+  /**
+   * Saves all currently loaded calendars to the specified directory.
+   *
+   * @param outputDir the directory where calendar CSV files will be written
+   */
+  public void saveCalendars(Path outputDir) {
+    CalendarPersistenceManager.saveAllCalendars(calendars, outputDir);
   }
 
 }

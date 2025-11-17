@@ -6,11 +6,14 @@ import com.calendar.calendar5010.model.Event;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.nio.file.Path;
 import java.util.List;
 import javax.swing.DefaultListModel;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
@@ -55,6 +58,17 @@ public class EventListView extends JFrame {
       }
     });
 
+    JButton saveButton = new JButton("Save Calendars");
+    saveButton.addActionListener(e -> {
+      Path dataDir = Path.of("D:\\MastersLearning\\Paradigm\\CalendarTest");
+      controller.saveCalendars(dataDir);
+      System.out.println("Manual save done.");
+    });
+
+    JPanel topPanel = new JPanel();
+    topPanel.add(saveButton);
+
+    add(topPanel, BorderLayout.NORTH);
     add(new JScrollPane(eventList), BorderLayout.CENTER);
   }
 

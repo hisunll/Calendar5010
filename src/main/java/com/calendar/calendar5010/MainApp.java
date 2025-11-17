@@ -17,7 +17,16 @@ public class MainApp {
    */
   public static void main(String[] args) throws Exception {
     AppController controller = new AppController();
-    controller.restoreCalendars(Path.of("D:\\MastersLearning\\Paradigm\\CalendarTest"));
+    Path dataDir = Path.of("D:\\MastersLearning\\Paradigm\\CalendarTest");
+    Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+      try {
+        controller.saveCalendars(dataDir);
+        System.out.println("Calendars saved to: " + dataDir);
+      } catch (Exception e) {
+        System.err.println("Failed to save calendars on shutdown: " + e.getMessage());
+      }
+    }));
+    controller.restoreCalendars(dataDir);
     controller.buildViews();
   }
 }

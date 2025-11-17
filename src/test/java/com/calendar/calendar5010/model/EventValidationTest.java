@@ -1,7 +1,5 @@
-package com.calendar.calendar5010;
+package com.calendar.calendar5010.model;
 
-import com.calendar.calendar5010.model.Event;
-import com.calendar.calendar5010.model.SingleEvent;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.LocalTime;
