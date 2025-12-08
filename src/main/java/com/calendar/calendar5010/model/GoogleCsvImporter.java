@@ -19,6 +19,8 @@ import java.util.Locale;
  */
 public final class GoogleCsvImporter {
 
+  private static final int EXPECTED_CSV_COLUMNS = 9;
+
   private GoogleCsvImporter() {}
 
   /**
@@ -41,7 +43,7 @@ public final class GoogleCsvImporter {
       String line;
       while ((line = reader.readLine()) != null) {
         String[] parts = parseCsvLine(line);
-        if (parts.length < 9) {
+        if (parts.length < EXPECTED_CSV_COLUMNS) {
           continue; // malformed line
         }
 

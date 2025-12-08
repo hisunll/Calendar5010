@@ -27,7 +27,6 @@ public class AppController {
   private Calendar selected;
 
   private CreateEventView createEventView;
-  private EventDetailView eventDetailView;
   private EventDetailView detailView;
   private EventListView listView;
 
@@ -59,11 +58,6 @@ public class AppController {
 
     createEventView = new CreateEventView(selected, this);
     Event show = selected.getEventsId().values().stream().findFirst().orElse(null);
-
-    if (show != null) {
-      eventDetailView = new EventDetailView(selected, show, this);
-    }
-
     listView = new EventListView(this, selected);
     listView.setVisible(true);
   }

@@ -6,7 +6,9 @@ import com.calendar.calendar5010.model.Event;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -60,7 +62,7 @@ public class EventListView extends JFrame {
 
     JButton saveButton = new JButton("Save Calendars");
     saveButton.addActionListener(e -> {
-      Path dataDir = Path.of("D:\\MastersLearning\\Paradigm\\CalendarTest");
+      Path dataDir = Paths.get(System.getProperty("user.home"), "CalendarTest");
       controller.saveCalendars(dataDir);
       System.out.println("Manual save done.");
     });
