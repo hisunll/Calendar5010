@@ -57,7 +57,6 @@ public class AppController {
     }
 
     createEventView = new CreateEventView(selected, this);
-    Event show = selected.getEventsId().values().stream().findFirst().orElse(null);
     listView = new EventListView(this, selected);
     listView.setVisible(true);
   }
