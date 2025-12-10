@@ -140,7 +140,7 @@ public class RecurringEvent extends Event {
       .location(this.getLocation())
       .allowConflict(this.getAllowConflict())
       .visibility(this.getVisibility())
-      .recurrenceDays(this.recurrenceDays != null ? new HashSet<>(this.recurrenceDays) : null)
+      .recurrenceDays(this.recurrenceDays)
       .repeatCount(this.repeatCount)
       .recurrenceEndDate(this.recurrenceEndDate);
   }
