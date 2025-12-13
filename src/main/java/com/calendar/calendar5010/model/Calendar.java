@@ -213,6 +213,12 @@ public class Calendar {
     announceEventAdded(event);
   }
 
+  private String makeKey(Event event) {
+    return event.getSubject()
+        + event.getStartDate()
+        + event.getStartTime();
+  }
+
   /**
    * Temporarily delete an event and its expanded children.
    *
@@ -233,9 +239,7 @@ public class Calendar {
 
     try {
       for (Event e : eventsList) {
-        String key = e.getSubject()
-            + e.getStartDate()
-            + e.getStartTime();
+        String key = makeKey(e);
         if (!events.containsKey(key)
             || !e.equals(events.get(key))
             || !eventsId.containsKey(e.getId())) {
